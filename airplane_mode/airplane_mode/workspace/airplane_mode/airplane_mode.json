@@ -1,0 +1,41 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"TQUEudWyV6\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Airplane Mode</span>\",\"col\":12}}]",
+ "creation": "2024-09-16 13:48:56.730567",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "color-monthly-rank",
+ "idx": 0,
+ "indicator_color": "yellow",
+ "is_hidden": 0,
+ "label": "Airplane Mode",
+ "links": [],
+ "modified": "2024-10-02 15:33:22.801463",
+ "modified_by": "Administrator",
+ "module": "Airplane Mode",
+ "name": "Airplane Mode",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [
+  {
+   "document_type": "Airlines",
+   "label": "Airline"
+  }
+ ],
+ "roles": [],
+ "sequence_id": 28.0,
+ "shortcuts": [
+  {
+   "doc_view": "List",
+   "label": "Flights",
+   "link_to": "Airplane Flight",
+   "type": "DocType"
+  }
+ ],
+ "title": "Airplane Mode"
+}

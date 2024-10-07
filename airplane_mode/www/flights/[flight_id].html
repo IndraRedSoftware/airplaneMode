@@ -1,0 +1,124 @@
+{% extends "templates/pages/base.html" %}
+
+{% block title %} {{flight.name}} {% endblock %}
+
+{% block css %}
+<style>
+    body {       
+        background-color: #F7EED3;      
+    }
+
+    .flight-header {
+        text-align: center;
+        font-size: 28px;
+        color: #333;
+        margin: 20px 0;
+        font-weight: bold;
+    }
+
+    .flight-details {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 20px;
+        transition: transform 0.3s ease;
+    }
+
+    .flight-details:hover {
+        transform: translateY(-10px);
+    }
+
+    .flight-info {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .flight-info li {
+        font-size: 16px;
+        color: #555;
+        margin-bottom: 10px;
+    }
+
+    .airport-code {
+        font-size: 20px;
+        font-weight: bold;
+        color: #0066cc;
+    }
+
+    .arrow {
+        font-size: 22px;
+        color: #333;
+        margin: 0 10px;
+    }
+
+    .flight-date, .flight-time {
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .book-flight-button {
+        display: inline-block;
+        padding: 10px 20px;
+        margin-top: 20px;
+        background-color: #28a745;
+        color: #fff;
+        text-decoration: none;
+        font-weight: bold;
+        border-radius: 5px;
+        text-align: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .book-flight-button:hover {
+        background-color: #218838;
+    }
+
+    /* Media Query for smaller screens */
+    @media (max-width: 600px) {
+        .flight-details {
+            padding: 15px;
+        }
+
+        .airport-code {
+            font-size: 18px;
+        }
+
+        .flight-header {
+            font-size: 24px;
+        }
+
+        .book-flight-button {
+            padding: 8px 16px;
+        }
+    }
+</style>
+
+{% endblock %}
+
+{% block body %}
+{% if flight %}
+<h1 class="flight-header">{{ flight.name }}</h1>
+<div class="flight-details">
+    <ul class="flight-info">
+        <li><strong>Airline: </strong>{{ flight.title or flight.name.split('-')[0] }}</li>
+        <li>
+            <span class="airport-code">{{ flight.source_airport_code }}</span>
+            <span class="arrow">→</span>
+            <span class="airport-code">{{ flight.destination_airport_code }}</span>
+        </li>
+        <li><span class="flight-date">{{ flight.date_of_departure }}</span> | <span class="flight-time">{{ flight.time_of_departure }}</span></li> 
+        <li><strong>Duration: </strong>{{ frappe.utils.format_duration(flight.duration) }}</li>
+    </ul>
+    <a href="/book-flight-ticket/new?flight={{ flight.name }}" class="book-flight-button">Book Flight</a>
+</div>
+{% endif %}
+
+
+{% endblock %}
+
+{% block js %}
+{% endblock %}

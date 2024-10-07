@@ -1,0 +1,184 @@
+{% extends "templates/pages/base.html" %}
+
+{% block title %} Available Shops {% endblock %}
+
+{% block css %}
+<style>
+    body {
+        background-color: #F7EED3; /* Light background color */
+        font-family: Arial, sans-serif; /* Font style */
+        margin: 0; /* Remove default margin */
+        padding: 0; /* Remove default padding */
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+        margin: 20px 0;
+    }
+
+    .container {
+        display: flex; /* Flexbox for layout */
+        max-width: 1200px; /* Max width for the main container */
+        margin: 0 auto; /* Center align the container */
+        padding: 20px; /* Padding around the container */
+    }
+
+    .filter-section {
+        flex: 1; /* Take up 1 part of the space */
+        background-color: #fff; /* White background for filters */
+        border-radius: 10px; /* Rounded corners */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        padding: 20px; /* Inner padding */
+        margin-right: 20px; /* Space between filters and shops */
+        height: fit-content; /* Adjust height to fit content */
+    }
+
+    .filter-section strong {
+        display: block; /* Each label on a new line */
+        margin-bottom: 10px; /* Space below the label */
+        color: #555; /* Darker color for labels */
+    }
+
+    .filter-section label {
+        display: block; /* Labels on new lines */
+        margin-bottom: 5px; /* Space between labels */
+        cursor: pointer; /* Pointer cursor for labels */
+    }
+
+    .shop-card-container {
+        flex: 2; /* Take up 2 parts of the space */
+        display: flex; /* Flexbox for shop cards */
+        flex-wrap: wrap; /* Wrap cards to next line */
+        justify-content: flex-start; /* Align cards to the left */
+        height: fit-content; /* Adjust height to fit content */
+    }
+
+    .shop-card {
+        background-color: #fff; /* White background for cards */
+        border: 1px solid #ddd; /* Light border */
+        border-radius: 10px; /* Rounded corners */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        margin: 15px; /* Space between cards */
+        padding: 20px; /* Inner spacing */
+        width: 300px; /* Fixed width for cards */
+        transition: transform 0.2s; /* Smooth transform effect */
+    }
+
+    .shop-card:hover {
+        transform: scale(1.05); /* Scale up on hover */
+    }
+
+    .shop-image-container img {
+        height: 150px;
+        width: 90%;
+    }
+
+    .shop-info {
+        margin-bottom: 6px; /* Space between info lines */
+    }
+
+    .shop-status.occupied {
+        font-weight: bold;
+        color: orange; /* Color for occupied status */
+    }
+
+    .shop-status.available {
+        font-weight: bold;
+        color: green; /* Color for available status */
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            flex-direction: column; /* Stack filters and shops on smaller screens */
+        }
+
+        .filter-section {
+            margin-right: 0; /* Remove right margin on smaller screens */
+            margin-bottom: 20px; /* Add bottom margin */
+        }
+
+        .shop-card {
+            width: 90%; /* Full width on smaller screens */
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<h1 style="text-align: center;">Shops</h1>
+<div class="container">
+    
+    <div class="filter-section">
+        <strong>Filter by Airport:</strong>
+        {% set airports = shops | map(attribute='airport') | unique %}
+        <div id="airportFilters">
+            {% for airport in airports %}
+                <label><input type="checkbox" onchange="filterShops(this)" value="{{ airport }}">{{ airport }}</label>
+            {% endfor %}
+        </div>
+
+        <strong>Filter by Status:</strong>
+        <div id="statusFilters">
+            <label><input type="checkbox" onchange="filterShops(this)" value="Available"> Available</label>
+            <label><input type="checkbox" onchange="filterShops(this)" value="Occupied"> Occupied</label>
+        </div>
+    </div>
+
+    <div class="shop-card-container" id="shopContainer">
+        {% if shops %}
+            {% for shop in shops %}
+                <div class="shop-card" data-airport="{{ shop.airport }}" data-status="{{ shop.status }}">
+                    {% if shop.shop_image %}
+                    <div class="shop-image-container">
+                        <img src="{{ shop.shop_image }}" alt="{{ shop.shop_name }}" class="shop-image">
+                    </div>
+                    {% endif %}
+
+                    <div class="shop-info"><strong>Shop:</strong> {{ shop.shop_number }}-{{ shop.shop_name }}</div>
+                    <div class="shop-info"><strong>Airport:</strong> {{ shop.airport }}</div>
+                    <div class="shop-info">Status: <span class="shop-status {{ 'occupied' if shop.status == 'Occupied' else 'available' }}">{{ shop.status }}</span></div>
+                    {% if shop.status == 'Occupied' %}
+                    <hr>
+                    <div class="shop-info"><strong>Tenant:</strong> {{ shop.tenant_name }}</div>
+                    <div class="shop-info"><strong>Contact:</strong> {{ shop.email }} | {{ shop.phone_number }}</div>
+                    
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No shops available for rent at the moment.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+function filterShops() {
+    const airportCheckboxes = document.querySelectorAll("#airportFilters input[type='checkbox']");
+    const statusCheckboxes = document.querySelectorAll("#statusFilters input[type='checkbox']");
+
+    const selectedAirports = Array.from(airportCheckboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value);
+
+    const selectedStatuses = Array.from(statusCheckboxes)
+        .filter(checkbox => checkbox.checked)
+        .map(checkbox => checkbox.value);
+
+    const shopCards = document.querySelectorAll(".shop-card");
+
+    shopCards.forEach(card => {
+        const airportMatches = selectedAirports.length === 0 || selectedAirports.includes(card.getAttribute("data-airport"));
+        const statusMatches = selectedStatuses.length === 0 || selectedStatuses.includes(card.getAttribute("data-status"));
+
+        if (airportMatches && statusMatches) {
+            card.style.display = "block";  // Show the card
+        } else {
+            card.style.display = "none";   // Hide the card
+        }
+    });
+}
+</script>
+{% endblock %}

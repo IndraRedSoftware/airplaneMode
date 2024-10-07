@@ -1,0 +1,225 @@
+{% extends "templates/pages/base.html" %}
+
+{% block title %} Book Your Flight {% endblock %}
+
+{% block css %}
+<style>
+    body {      
+        background-color: #F7EED3;
+    }
+
+    .booking-container {
+        max-width: 600px;
+        margin: 50px auto;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s;
+    }
+
+    .booking-container:hover {
+        box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .booking-container h1 {
+        text-align: center;
+        color: #007bff;
+        margin-bottom: 20px;
+        font-size: 28px;
+    }
+
+    .flight-info {
+        background-color: #e9f7fe;
+        border: 1px solid #007bff;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .flight-info label {
+        font-weight: bold;
+        color: #0056b3;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .booking-container input, .booking-container select {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        transition: border-color 0.3s;
+    }
+
+    .booking-container input:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    .book-flight-button {
+        background-color: #007bff;
+        color: white;
+        padding: 12px 0;
+        text-align: center;
+        border-radius: 5px;
+        text-decoration: none;
+        display: inline-block;
+        width: 100%;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+
+    .book-flight-button:hover {
+        background-color: #0056b3;
+    }
+
+    .note {
+        font-size: 14px;
+        color: #666;
+        margin-top: 10px;
+        text-align: center;
+    }
+</style>
+<style>
+    /* The modal background (dimmed screen) */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 999; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        background-color: rgba(0, 0, 0, 0.6); /* Black background with opacity */
+        display: flex; /* Flexbox for centering */
+        align-items: center; /* Vertical centering */
+        justify-content: center; /* Horizontal centering */
+    }
+
+    /* Modal content box */
+    .modal-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        max-width: 400px; /* Maximum width of the modal box */
+        width: 100%; /* Take full width up to the max width */
+        text-align: center;
+        position: relative;
+        left: 36%;
+        top: 30%;
+    }
+
+    
+    /* Button style for login link */
+    .modal a {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #007bff; /* Bootstrap blue */
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        margin-top: 15px;
+        transition: background-color 0.3s ease;
+    }
+
+    .modal a:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+</style>
+
+{% endblock %}
+
+{% block body %}
+    <div class="booking-container">
+        <h1>Book Your Flight</h1>
+        
+        <div class="flight-info">
+            <label for="flight-name">Flight Name: </label>
+            <span id="flight-name">{{ flight.name }}</span>
+            <label for="flight-price">Flight Price:</label>
+            <span id="flight-price">{{ flight.flight_price }}</span>
+        </div>
+        
+        <form id="booking-form"  method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <input type="hidden" name="flight" value="{{ flight.name }}">
+            <div>
+                <label for="passenger">Fill Passenger Name here:</label>
+                <input type="text" id="passenger" name="passenger" required>
+            </div>
+            
+            <button type="submit" class="book-flight-button">Confirm Booking</button>
+        </form>
+        <p class="note">Please make sure all information is correct before booking.</p>
+    </div>
+
+    {% if is_guest %}
+        <!-- Modal for login prompt -->
+        <div id="loginModal" class="modal">
+            <div class="modal-content">
+                
+                <p>You need to log in to proceed with the booking.</p>
+                <a href="/login?redirect_to={{ frappe.utils.get_url(frappe.request.url) }}">Log in</a>
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}
+
+{% block js %}
+<script>
+    document.getElementById('booking-form').onsubmit = function(event) {
+        event.preventDefault(); 
+    
+        const formData = new FormData(this); 
+        const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+    
+        fetch('/api/method/airplane_mode.www.book_flight.index.book_flight_ticket', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Frappe-CSRF-Token': csrfToken
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data)
+            if (data.redirect) {
+                // Show a message asking the user to log in
+                alert("Please log in to book a flight.");
+                console.log(data.redirect)
+                window.location.href = data.redirect;
+            } else if (data.message && data.message.message) {
+                alert(data.message.message);  // Show success message
+                window.location.href = '/';  // Redirect on success
+            } else if (data.error) {
+                alert(data.error);  // Show error message
+            } else {
+                alert("Unknown error occurred."); 
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("An error occurred while processing the request.");
+        });
+    };
+
+    // Show login modal for guest users
+    window.onload = function() {
+        const isGuest = {{ is_guest|int }};
+        if (isGuest) {
+            const modal = document.getElementById('loginModal');
+            modal.style.display = 'block';
+        }
+       
+    };
+</script>
+{% endblock %}

@@ -1,0 +1,263 @@
+{% extends "templates/pages/base.html" %}
+
+{% block title %} Flights {% endblock %}
+
+{% block css %}
+<style>
+    .flight-search-container {
+    
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    
+}
+
+.flight-search-container h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.flight-search-container form {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flight-search-container div {
+    margin-bottom: 15px;
+}
+
+.flight-search-container label {
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 5px;
+}
+
+.flight-search-container select,
+.flight-search-container input[type="date"] {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.flight-search-container select:focus,
+.flight-search-container input[type="date"]:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+.flight-search-container button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.flight-search-container button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+.flight-search-container button:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+    .flight-search-container {
+        padding: 15px;
+    }
+
+    .flight-search-container button {
+        width: 100%;
+    }
+}
+
+</style>
+<style>
+    body {
+        background-color: #F7EED3; /* Light background color */
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        margin: 20px 0;
+    }
+    .flight-search-container {
+        display: flex;
+        justify-content: center;
+        margin: 20px 0;
+    }
+    .flight-search-form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        gap: 20px;
+    }
+    .flight-search-form label {
+        font-size: 1rem;
+        color: #333;
+    }
+    .flight-search-form input, .flight-search-form select {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+    .flight-search-form button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .flight-search-form button:hover {
+        background-color: #0056b3;
+    }
+    .flight-card-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center; /* Center the cards */
+        padding: 20px;
+    }
+    .flight-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 16px;
+        margin: 16px;
+        background-color: #fff;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+    }
+    .flight-card h5 {
+        font-size: 1.25rem;
+        margin: 0 0 8px 0;
+        color: #333;
+    }
+    .flight-card span {
+        display: inline-block;
+        margin-right: 8px;
+    }
+    .flight-card a {
+        text-decoration: none;
+        color: #007bff;
+        font-weight: bold;
+    }
+    .flight-card a:hover {
+        text-decoration: underline;
+    }
+    .flight-info {
+        font-size: 0.875rem;
+        color: #666;
+    }
+    .flight-info span {
+        margin-right: 8px;
+    }
+</style>
+{% endblock %}
+{% block body %}
+<h1>Flights</h1>
+
+<div class="flight-search-container">
+    <form id="flight-search-form">
+        <div>
+            <label for="source">From</label><br>
+            <select name="source_airport" id="source" required>
+                <option value="">Select Source</option>
+                {% for airport in airports %}
+                <option value="{{ airport.name }}">{{ airport.name }} ({{ airport.code }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="destination">To</label><br>
+            <select name="destination_airport" id="destination" required>
+                <option value="">Select Destination</option>
+                {% for airport in airports %}
+                <option value="{{ airport.name }}">{{ airport.name }} ({{ airport.code }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="departure_date">Departure Date</label><br>
+            <input type="date" name="departure_date" id="departure_date">
+        </div>
+        <div>
+            <button type="submit">Search Flights</button>
+        </div>
+    </form>
+</div>
+
+<div id="flights-list">
+    {% if flights %}
+    <div class="flight-card-container">
+        {% for flight in flights %}
+        <div class="flight-card">
+            <h5>{{ flight.name.split('-')[0] }}</h5>
+            <div class="flight-info">
+                <span>{{ flight.source_airport_code }}</span><span>→</span><span>{{ flight.destination_airport_code }}</span><br>
+                <span>{{ frappe.utils.format_date(flight.date_of_departure, "d MMMM, YYYY") }}</span> |
+                <span>{{ flight.time_of_departure }}</span> |
+                <span>{{ frappe.utils.format_duration(flight.duration) }}</span>
+            </div>
+            <br>
+            <a href="/flights/{{ flight.name }}">View Flight</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <h4>No Flights are available for the selected criteria.</h4>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('flight-search-form');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            
+            const source_airport = document.getElementById('source').value;
+            const destination_airport = document.getElementById('destination').value;
+            const departure_date = document.getElementById('departure_date').value;
+
+            // Build the query parameters
+            let query = `?source_airport=${source_airport}&destination_airport=${destination_airport}`;
+            if (departure_date) {
+                query += `&departure_date=${departure_date}`;
+            }
+
+            // Fetch flights dynamically without reloading the page
+            fetch('/flights' + query)
+                .then(response => response.text())
+                .then(data => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(data, 'text/html');
+                    const newFlightsList = doc.getElementById('flights-list').innerHTML;
+
+                    // Replace the flight list with the new data
+                    document.getElementById('flights-list').innerHTML = newFlightsList;
+                })
+                .catch(error => {
+                    console.error('Error fetching flights:', error);
+                });
+        });
+    });
+</script>
+{% endblock %}

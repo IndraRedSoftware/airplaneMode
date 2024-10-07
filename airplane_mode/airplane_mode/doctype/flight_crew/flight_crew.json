@@ -1,0 +1,63 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{flight}-{role}-{crew}",
+ "creation": "2024-09-24 10:29:23.807339",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "flight",
+  "crew",
+  "role"
+ ],
+ "fields": [
+  {
+   "fieldname": "flight",
+   "fieldtype": "Link",
+   "label": "Flight",
+   "options": "Airplane Flight"
+  },
+  {
+   "fieldname": "crew",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Crew",
+   "options": "Crew Member",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "crew.role",
+   "fieldname": "role",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Role",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-09-24 10:58:16.959111",
+ "modified_by": "Administrator",
+ "module": "Airplane Mode",
+ "name": "Flight Crew",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

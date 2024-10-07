@@ -1,0 +1,158 @@
+{% extends "templates/pages/base.html" %}
+
+{% block title %} SunWay Travels {% endblock %}
+
+{% block css %}
+<style>
+    body {
+        background-image: url('https://media.istockphoto.com/id/166006960/photo/side-of-passenger-jet-airplane-easy-to-cut-out.jpg?s=612x612&w=0&k=20&c=mGrKZ9q5-PSkWPR-rW2aarcDdDG8tzdczrva-6gXHZE=');
+        background-size: cover;
+        background-position: center;
+    }
+    .hero {   
+        color: #F7EED3;
+        text-align: center;
+        padding: 20px 10px;
+    }
+
+    .hero h1 {
+        font-size: 48px;
+        margin: 0;
+        font-weight: 600;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero p {
+        font-size: 18px;
+        margin-top: 10px;
+        font-weight: 300;
+    }
+
+    .search-section {
+        background-color: #fff;
+        padding: 20px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 800px;
+        margin: -60px auto 30px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .search-section input, .search-section button {
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        font-size: 16px;
+    }
+
+    .search-section input {
+        flex: 1;
+        margin-right: 10px;
+    }
+
+    .search-section button {
+        background-color: #674636;
+        color: #FFF8E8;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .search-section button:hover {
+        background-color: #56382c;
+    }
+
+    .features {
+        text-align: center;
+        padding: 50px 20px;
+        
+    }
+
+    .features h2 {
+        font-size: 32px;
+        color: #333;
+        margin-bottom: 30px;
+    }
+
+    .features-grid {
+        display: flex;
+        justify-content: space-around;
+        max-width: 1200px;
+        margin: 0 auto;
+        flex-wrap: wrap;
+    }
+
+    .feature-card {
+        background-color: #fff;
+        padding: 20px;
+        margin: 10px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        width: 300px;
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+    }
+
+    .feature-card h3 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    .feature-card p {
+        font-size: 16px;
+        color: #666;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .features-grid {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+    <div class="hero">
+        <h1>Welcome to SunWay Travels</h1>
+        <p>Your journey starts here. Explore our flights, shops, and airports!</p>
+    </div>
+
+    <!-- <div class="search-section">
+        <input type="text" placeholder="Search Flights, Shops, or Airports">
+        <button>Search</button>
+    </div> -->
+
+    <section class="features">
+        <h2>Explore Our Services</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>Book Flights</h3>
+                <p>Find flights to your favorite destinations easily.</p>
+                <a href="/flights" class="btn">Explore Flights</a>
+            </div>
+
+            <div class="feature-card">
+                <h3>Airport Shops</h3>
+                <p>Browse available shops at our partner airports.</p>
+                <a href="/available-shops" class="btn">Available Shops</a>
+            </div>
+
+            <div class="feature-card">
+                <h3>Find Airports</h3>
+                <p>Discover all the airports we operate in globally.</p>
+                <a href="/airports" class="btn">Explore Airports</a>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block js %}
+<!-- Add custom JavaScript if necessary -->
+{% endblock %}

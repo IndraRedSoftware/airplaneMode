@@ -1,0 +1,72 @@
+<style>
+    /* Styling for the flight details container */
+.flight-details {
+    list-style-type: none;
+    padding: 0;
+    margin: 20px 0;
+    font-family: Arial, sans-serif;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.flight-details li {
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #333;
+}
+
+.flight-details li strong {
+    color: #555;
+}
+
+.flight-details li span {
+    margin: 0 5px;
+}
+
+h1 {
+    font-size: 28px;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+h3 {
+    font-size: 22px;
+    color: #34495e;
+    margin-bottom: 15px;
+}
+
+/* Styling for the Book Flight button */
+.btn.btn-primary {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    font-size: 16px;
+}
+
+.btn.btn-primary:hover {
+    background-color: #2980b9;
+}
+
+.btn.btn-primary:active {
+    background-color: #1f5f8a;
+}
+
+</style>
+
+<h1>{{name}}</h1>
+<h3>Flight Details</h3>
+<div class="flight-details">
+    <li><strong>Airline: </strong>{{ doc.title or doc.name.split('-')[0] }}</li>
+    <li><span>{{ doc.source_airport_code }}</span><span>-></span><span>{{ doc.destination_airport_code }}</span></li>
+    <li><span>{{date_of_departure}}</span> | <span>{{time_of_departure}}</span></li> 
+    <li><strong>Duration: </strong> {{ frappe.utils.format_duration(doc.duration) }}</li>
+
+    <a href="/book-flight-ticket-web-form/new?flight={{ name }}" class="btn btn-primary">Book Flight</a>
+</div>

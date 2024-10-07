@@ -1,0 +1,41 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2024-10-07 11:56:43.650576",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "Occupied Shops",
+ "letterhead": null,
+ "modified": "2024-10-07 11:56:43.650576",
+ "modified_by": "Administrator",
+ "module": "Airport Shop Management",
+ "name": "Rent Payment Information",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "query": "SELECT \r\n    rp.name AS \"Rent Payment ID:Link/Rent Payment\",\r\n    rp.lease_contract AS \"Lease Contract:Link/Lease Contract\",\r\n    rp.payment_date AS \"Payment Date:Date\",\r\n    rp.rent_amount AS \"Rent Amount:Currency\",\r\n    rp.receipt_number AS \"Receipt Number\"\r\nFROM \r\n    `tabRent Payment` rp\r\nWHERE \r\n    rp.payment_date IS NOT NULL\r\nORDER BY \r\n    rp.payment_date DESC;\r\n",
+ "ref_doctype": "Rent Payment",
+ "report_name": "Rent Payment Information",
+ "report_type": "Query Report",
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Shop Manager"
+  },
+  {
+   "role": "Leasing Agent"
+  },
+  {
+   "role": "Airport Authority Personnel"
+  },
+  {
+   "role": "Accountant"
+  }
+ ],
+ "timeout": 0
+}

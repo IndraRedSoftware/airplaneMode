@@ -1,0 +1,90 @@
+{% extends "templates/pages/base.html" %}
+
+{% block title %} Airports List {% endblock %}
+
+{% block css %}
+<style>
+    body {
+        background-color: #F7EED3; /* Light background color */
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+        margin: 20px 0;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .airport-card-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .airport-card {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 15px;
+        padding: 20px;
+        width: 300px;
+        transition: transform 0.2s;
+    }
+
+    .airport-card:hover {
+        transform: scale(1.05);
+    }
+
+    .airport-info {
+        margin-bottom: 10px;
+    }
+
+    .airport-name {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .airport-location {
+        color: #777;
+    }
+
+    @media (max-width: 768px) {
+        .airport-card {
+            width: 90%;
+            margin: 10px auto;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<h1>Airports</h1>
+<div class="container">   
+    <div class="airport-card-container">
+        {% if airports %}
+            {% for airport in airports %}
+                <div class="airport-card">
+                    <div class="airport-info airport-name">{{ airport.name }}</div>
+                    <div class="airport-info airport-location">{{ airport.city }}</div>
+                    <div class="airport-info"><strong>Code:</strong> {{ airport.code }}</div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No airports available at the moment.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
