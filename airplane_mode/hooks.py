@@ -14,7 +14,7 @@ doc_events = {
 
 scheduler_events = {
     "cron": {
-        "0 0 1 * *": [
+        "0 0 28-30 * *": [
             "airplane_mode.airport_shop_management.api.send_rent_reminders"
         ],
         "0 0 * * *": [  # Check for lease expiration every day

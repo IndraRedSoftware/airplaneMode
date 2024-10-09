@@ -1,4 +1,5 @@
 import frappe
+from frappe.utils import nowdate
 
 def get_context(context):
     # Get user input from the request (query parameters)
@@ -15,6 +16,8 @@ def get_context(context):
         filters['destination_airport'] = destination_airport
     if departure_date:
         filters['date_of_departure'] = departure_date
+
+    filters['date_of_departure'] = ['>=', nowdate()]
 
     # Fetch flights based on filters (if any)
     context.flights = frappe.get_all(

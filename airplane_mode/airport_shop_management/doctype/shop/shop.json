@@ -10,6 +10,7 @@
   "shop_name",
   "status",
   "airport",
+  "area",
   "shop_image"
  ],
  "fields": [
@@ -43,11 +44,16 @@
    "fieldname": "shop_image",
    "fieldtype": "Attach Image",
    "label": "Shop Image"
+  },
+  {
+   "fieldname": "area",
+   "fieldtype": "Data",
+   "label": "Area"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-10-03 12:23:12.172494",
+ "modified": "2024-10-08 11:02:56.521057",
  "modified_by": "Administrator",
  "module": "Airport Shop Management",
  "name": "Shop",

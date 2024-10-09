@@ -136,6 +136,7 @@
                     {% endif %}
 
                     <div class="shop-info"><strong>Shop:</strong> {{ shop.shop_number }}-{{ shop.shop_name }}</div>
+                    <div class="shop-info"><strong>Area:</strong> {{ shop.area }}</div>
                     <div class="shop-info"><strong>Airport:</strong> {{ shop.airport }}</div>
                     <div class="shop-info">Status: <span class="shop-status {{ 'occupied' if shop.status == 'Occupied' else 'available' }}">{{ shop.status }}</span></div>
                     {% if shop.status == 'Occupied' %}

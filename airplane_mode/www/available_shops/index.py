@@ -16,6 +16,7 @@ def get_context(context):
             s.status, 
             s.shop_number,
             s.shop_image, 
+            s.area,
             s.airport,
             t.tenant_name, 
             t.email, 

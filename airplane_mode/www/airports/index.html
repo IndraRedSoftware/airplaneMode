@@ -5,7 +5,7 @@
 {% block css %}
 <style>
     body {
-        background-color: #F7EED3; /* Light background color */
+        background-color: #F7EED3;
         font-family: Arial, sans-serif;
         margin: 0;
         padding: 0;
@@ -20,15 +20,33 @@
     .container {
         display: flex;
         flex-direction: column;
-        max-width: 1200px;
+        
         margin: 0 auto;
         padding: 20px;
     }
 
+    .filters {
+        display: flex;
+        justify-content: space-between;
+        margin: 0 auto;
+        min-width: 40%;
+        
+    }
+
+    .filters select {
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        background-color: #fff;
+        font-size: 16px;
+        width: 48%;
+    }
+
     .airport-card-container {
         display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
+        width: 80vw;
+        flex-direction: column;
+        
     }
 
     .airport-card {
@@ -36,9 +54,9 @@
         border: 1px solid #ddd;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin: 15px;
-        padding: 20px;
-        width: 300px;
+        margin: 6px;
+        padding: 16px;
+        
         transition: transform 0.2s;
     }
 
@@ -48,6 +66,9 @@
 
     .airport-info {
         margin-bottom: 10px;
+    }
+    .airport-info:last-child {
+        margin-bottom: 0px;
     }
 
     .airport-name {
@@ -70,16 +91,48 @@
 {% endblock %}
 
 {% block body %}
-
 <h1>Airports</h1>
-<div class="container">   
+
+<div class="container">
+    <!-- Filters Section -->
+    <form method="GET" action="" class="filters">
+        <select name="country" id="country-select" onchange="this.form.submit()">
+            <option value="">Select Country</option>
+            {% for country in countries %}
+                <option value="{{ country.country }}"
+                    {% if selected_country == country.country %}selected{% endif %}>
+                    {{ country.country }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select name="city" id="city-select" onchange="this.form.submit()">
+            <option value="">Select City</option>
+            {% if cities %}
+                {% for city in cities %}
+                    <option value="{{ city.city }}"
+                        {% if selected_city == city.city %}selected{% endif %}>
+                        {{ city.city }}
+                    </option>
+                {% endfor %}
+            {% endif %}
+        </select>
+    </form>
+
+    <!-- Airport Cards Section -->
     <div class="airport-card-container">
         {% if airports %}
             {% for airport in airports %}
                 <div class="airport-card">
-                    <div class="airport-info airport-name">{{ airport.name }}</div>
+                    <div>
+                        <div class="airport-info airport-name">{{ airport.name }} - {{ airport.code }}</div>
                     <div class="airport-info airport-location">{{ airport.city }}</div>
-                    <div class="airport-info"><strong>Code:</strong> {{ airport.code }}</div>
+                    </div>
+                    <div>
+                        <a href="/flights?airport={{ airport.code }}" class="view-flights-btn">
+                            View Flights
+                        </a>
+                    </div>                   
                 </div>
             {% endfor %}
         {% else %}
@@ -87,4 +140,50 @@
         {% endif %}
     </div>
 </div>
+{% endblock %}
+
+
+{% block js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const countrySelect = document.getElementById('country-select');
+        const citySelect = document.getElementById('city-select');
+        const form = document.getElementById('airport-filter-form');
+
+        // Clear filters on page load by checking if URL has query params
+        if (window.location.search) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        // Handle form submission to apply filters without page reload
+        form.addEventListener('change', function (e) {
+            e.preventDefault();
+
+            // Get selected filter values
+            const selectedCountry = countrySelect.value;
+            const selectedCity = citySelect.value;
+
+            // Build query parameters for filtering
+            let query = `?country=${selectedCountry}`;
+            if (selectedCity) {
+                query += `&city=${selectedCity}`;
+            }
+
+            // Fetch filtered airports dynamically without reloading the page
+            fetch('/airports' + query)
+                .then(response => response.text())
+                .then(data => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(data, 'text/html');
+                    const newAirportList = doc.getElementById('airport-list').innerHTML;
+
+                    // Replace the airport list with the new filtered data
+                    document.getElementById('airport-list').innerHTML = newAirportList;
+                })
+                .catch(error => {
+                    console.error('Error fetching airports:', error);
+                });
+        });
+    });
+</script>
 {% endblock %}
