@@ -162,7 +162,7 @@
             <div class="modal-content">
                 
                 <p>You need to log in to proceed with the booking.</p>
-                <a href="/login?redirect_to={{ frappe.utils.get_url(frappe.request.url) }}">Log in</a>
+                <a href="/login?redirect_to=book-flight-ticket/new?flight={{flight.name | urlencode}}">Log in</a>
             </div>
         </div>
     {% endif %}
@@ -195,11 +195,10 @@
             if (data.redirect) {
                 // Show a message asking the user to log in
                 alert("Please log in to book a flight.");
-                console.log(data.redirect)
-                window.location.href = data.redirect;
+                
             } else if (data.message && data.message.message) {
                 alert(data.message.message);  // Show success message
-                window.location.href = '/';  // Redirect on success
+                
             } else if (data.error) {
                 alert(data.error);  // Show error message
             } else {

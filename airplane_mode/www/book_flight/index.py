@@ -28,11 +28,7 @@ def book_flight_ticket(flight, passenger):
 
         # Check if the user is logged in
         if frappe.session.user == "Guest":
-            current_url = frappe.local.request.url
-            print(current_url)
-            # Redirect to login page for guest users
-            frappe.local.response["type"] = "redirect"
-            frappe.local.response["location"] = f"/login?redirect_to={current_url}"
+            
             return
 
         # Fetch flight details

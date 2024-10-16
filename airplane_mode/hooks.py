@@ -30,6 +30,7 @@ website_route_rules = [
     {"from_route": "/flights/<name>", "to_route": "flights/[flight_id]"},
     {"from_route": "/book-flight-ticket/new", "to_route": "book_flight"},
     {"from_route": "/airports", "to_route": "airports"},
+    {"from_route": "/airports/<airport_code>-flights", "to_route": "airports/airport_flights"},
 ]
 
 home_page = "home"

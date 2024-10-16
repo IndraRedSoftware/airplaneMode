@@ -1,0 +1,68 @@
+{% extends "templates/pages/base.html" %}
+
+{% block title %} Airports List {% endblock %}
+
+{% block css %}
+<style>
+    .airport-flights-container {
+        margin: 20px;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .flights-card-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: flex-start;
+    }
+    .flight-card {
+        background-color: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 15px;
+        width: 250px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .flight-details {
+        display: flex;
+        flex-direction: column;
+    }
+    .flight-info {
+        margin-bottom: 10px;
+    }
+    .flight-info strong {
+        font-weight: bold;
+        color: #333;
+    }
+</style>
+
+{% endblock %}
+
+{% block body %}
+
+<div id="flights-list">
+    {% if flights %}
+    <div class="flight-card-container">
+        {% for flight in flights %}
+        <div class="flight-card">
+            <h5>{{ flight.name.split('-')[0] }}</h5>
+            <div class="flight-info">
+                <span>{{ flight.source_airport_code }}</span><span>→</span><span>{{ flight.destination_airport_code }}</span><br>
+                <span>{{ frappe.utils.format_date(flight.date_of_departure, "d MMMM, YYYY") }}</span> |
+                <span>{{ flight.time_of_departure }}</span> |
+                <span>{{ frappe.utils.format_duration(flight.duration) }}</span>
+            </div>
+            <br>
+            <a href="/flights/{{ flight.name }}">View Flight</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <h4>No Flights are available for the selected criteria.</h4>
+    {% endif %}
+</div>
+    
+
+{% endblock %}
