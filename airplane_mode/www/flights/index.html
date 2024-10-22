@@ -4,43 +4,21 @@
 
 {% block css %}
 
+<link rel="stylesheet" href="/assets/airplane_mode/css/flight_search.css">
 <link rel="stylesheet" href="/assets/airplane_mode/css/flights.css">
 <style>
-.flight-search-container {
-    
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    
-}
+    body {
+        background-color: #F7EED3;
+        /* Light background color */
+    }
 
-.flight-search-container h1 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-}
+    h1 {
+        text-align: center;
+        color: #333;
+        margin: 20px 0;
+    }
 
-.flight-search-container form {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.flight-search-container div {
-    margin-bottom: 15px;
-}
-
-.flight-search-container label {
-    font-weight: bold;
-    color: #555;
-    margin-bottom: 5px;
-}
-
-.flight-search-container select,
+    .flight-search-container input,
 .flight-search-container input[type="date"] {
     padding: 10px;
     border: 1px solid #ddd;
@@ -49,48 +27,58 @@
     transition: border-color 0.3s;
 }
 
-.flight-search-container select:focus,
+.flight-search-container input:focus,
 .flight-search-container input[type="date"]:focus {
     border-color: #007bff;
     outline: none;
 }
 
-.flight-search-container button {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 4px;
-    background-color: #007bff;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
-}
-
-.flight-search-container button:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
-}
-
-.flight-search-container button:active {
-    transform: translateY(0);
-}
-
-@media (max-width: 600px) {
-    .flight-search-container {
-        padding: 15px;
-    }
-
-    .flight-search-container button {
+    /* Ensure the input field spans the full width */
+    input {
         width: 100%;
-    }
-}
-
-h1 {
-        text-align: center;
-        color: #333;
-        margin: 20px 0;
+        padding: 8px;
+        box-sizing: border-box;
+        /* Prevents padding from affecting width */
+        position: relative;
     }
 
+    /* Style the dropdown list */
+    ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        max-height: 150px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        width: 300px !important;
+        position: absolute;
+        /* Position the dropdown over the page content */
+        z-index: 10;
+        /* Ensure it floats over other elements */
+        display: none;
+        /* Initially hidden */
+        box-sizing: border-box;
+    }
+
+    /* Style for each dropdown item */
+    ul li {
+        padding: 8px;
+        cursor: pointer;
+    }
+
+    /* Hover effect for dropdown items */
+    ul li:hover {
+        background-color: #f0f0f0;
+    }
+
+    /* Wrapper for the dropdown field */
+    .dropdown-wrapper {
+        position: relative;
+        /* Needed for the absolute positioning of the list */
+        width: 50%;
+        /* Make it responsive */
+    }
 </style>
 
 {% endblock %}
@@ -101,23 +89,24 @@ h1 {
 <div class="flight-search-container">
     <form id="flight-search-form">
         <div>
-            <label for="source">From</label><br>
-            <select name="source_airport" id="source" required>
-                <option value="">Select Source</option>
-                {% for airport in airports %}
-                <option value="{{ airport.name }}">{{ airport.name }} ({{ airport.code }})</option>
+            <label for="source_city_input">From (City)</label><br>
+            <input type="text" id="source_city_input" placeholder="Enter Source City" oninput="filterCities('source_city_input', 'source_city_list')" required>
+            <ul id="source_city_list" style="display: none;">
+                {% for city in cities %}
+                <li onclick="selectCity('{{ city }}', 'source_city_input', 'source_city_list')">{{ city }}</li>
                 {% endfor %}
-            </select>
+            </ul>
         </div>
         <div>
-            <label for="destination">To</label><br>
-            <select name="destination_airport" id="destination" required>
-                <option value="">Select Destination</option>
-                {% for airport in airports %}
-                <option value="{{ airport.name }}">{{ airport.name }} ({{ airport.code }})</option>
+            <label for="destination_city_input">To (City)</label><br>
+            <input type="text" id="destination_city_input" placeholder="Enter Destination City" oninput="filterCities('destination_city_input', 'destination_city_list')" required>
+            <ul id="destination_city_list" style="display: none;">
+                {% for city in cities %}
+                <li onclick="selectCity('{{ city }}', 'destination_city_input', 'destination_city_list')">{{ city }}</li>
                 {% endfor %}
-            </select>
+            </ul>
         </div>
+        
         <div>
             <label for="departure_date">Departure Date</label><br>
             <input type="date" name="departure_date" id="departure_date">
@@ -154,37 +143,77 @@ h1 {
 
 {% block js %}
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('flight-search-form');
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('flight-search-form');
 
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-            
-            const source_airport = document.getElementById('source').value;
-            const destination_airport = document.getElementById('destination').value;
-            const departure_date = document.getElementById('departure_date').value;
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
 
-            // Build the query parameters
-            let query = `?source_airport=${source_airport}&destination_airport=${destination_airport}`;
-            if (departure_date) {
-                query += `&departure_date=${departure_date}`;
-            }
+        // Fetch the values from the updated input fields
+        const source_city = document.getElementById('source_city_input').value;
+        const destination_city = document.getElementById('destination_city_input').value;
+        const departure_date = document.getElementById('departure_date') ? document.getElementById('departure_date').value : '';
 
-            // Fetch flights dynamically without reloading the page
-            fetch('/flights' + query)
-                .then(response => response.text())
-                .then(data => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(data, 'text/html');
-                    const newFlightsList = doc.getElementById('flights-list').innerHTML;
+        // Build the query parameters for the search
+        let query = `?source_city=${source_city}&destination_city=${destination_city}`;
+        if (departure_date) {
+            query += `&departure_date=${departure_date}`;
+        }
 
-                    // Replace the flight list with the new data
-                    document.getElementById('flights-list').innerHTML = newFlightsList;
-                })
-                .catch(error => {
-                    console.error('Error fetching flights:', error);
-                });
-        });
+        // Fetch flights dynamically without reloading the page
+        fetch('/flights' + query)
+            .then(response => response.text())
+            .then(data => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data, 'text/html');
+                const newFlightsList = doc.getElementById('flights-list').innerHTML;
+
+                // Replace the flight list with the new data
+                document.getElementById('flights-list').innerHTML = newFlightsList;
+            })
+            .catch(error => {
+                console.error('Error fetching flights:', error);
+            });
     });
+});
+
+
+</script>
+<script>
+ // Function to filter cities and show the list when typing
+function filterCities(inputId, listId) {
+    let input = document.getElementById(inputId).value.toLowerCase();
+    let list = document.getElementById(listId);
+    let cities = list.getElementsByTagName('li');
+    
+    if (input.length > 0) {
+        list.style.display = "block"; // Show the list when input is typed
+        let matchFound = false;
+        for (let i = 0; i < cities.length; i++) {
+            let city = cities[i].innerText.toLowerCase();
+            if (city.startsWith(input) || city.includes(input)) {
+                cities[i].style.display = "block"; // Show matching cities
+                matchFound = true;
+            } else {
+                cities[i].style.display = "none"; // Hide non-matching cities
+            }
+        }
+        
+        // If no match found, hide the list
+        if (!matchFound) {
+            list.style.display = "none";
+        }
+    } else {
+        list.style.display = "none"; // Hide the list if the input is cleared
+    }
+}
+
+// Function to select a city from the filtered list
+function selectCity(cityName, inputId, listId) {
+    document.getElementById(inputId).value = cityName; // Set selected city in the input field
+    document.getElementById(listId).style.display = "none"; // Hide the city list after selection
+}
+
+
 </script>
 {% endblock %}

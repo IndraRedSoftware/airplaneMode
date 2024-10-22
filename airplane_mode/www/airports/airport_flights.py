@@ -1,4 +1,5 @@
 import frappe
+from frappe.utils import nowdate
 
 def get_context(context):
     # Dynamically fetch the airport code from the URL parameters
@@ -16,8 +17,10 @@ def get_context(context):
         frappe.throw(f"Airport with code {airport_code} not found.")
 
     # Fetch the flights departing from this airport
-    flights = frappe.get_all("Airplane Flight", filters={"source_airport_code": airport_code},fields="*")
+    flightsFrom = frappe.get_all("Airplane Flight", filters={"source_airport_code": airport_code,"date_of_departure": [">=", nowdate()]},fields="*")
+    flightsTo = frappe.get_all("Airplane Flight", filters={"destination_airport_code": airport_code,"date_of_departure": [">=", nowdate()]},fields="*")
 
     # Pass the airport and flights data to the context
     context.airport = airport
-    context.flights = flights
+    context.flightsFrom = flightsFrom
+    context.flightsTo = flightsTo
